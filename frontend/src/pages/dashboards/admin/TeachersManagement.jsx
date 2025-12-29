@@ -140,7 +140,7 @@ const TeachersManagement = () => {
         };
         
         console.log('Update data:', updateData);
-        await axios.put(`/api/admin/teachers/${editingTeacher._id}`, updateData, {
+        await api.put(`/api/admin/teachers/${editingTeacher._id}`, updateData, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -255,7 +255,7 @@ const TeachersManagement = () => {
       const token = localStorage.getItem('token');
       
       // Use PATCH for class assignment endpoint
-      const response = await axios.patch(
+      const response = await api.patch(
         `/api/admin/teachers/${selectedTeacher._id}/assign-class`,
         assignmentData,
         {
