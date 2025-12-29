@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const EarlyLeaveManagement = () => {
@@ -18,7 +18,7 @@ const EarlyLeaveManagement = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get('/api/teacher/students', {
+      const response = await api.get('/api/teacher/students', {
         params: { class: studentClass, section }
       });
       setStudents(response.data);
@@ -37,7 +37,7 @@ const EarlyLeaveManagement = () => {
     }
 
     try {
-      const response = await axios.post('/api/teacher/early-leave', formData);
+      const response = await api.post('/api/teacher/early-leave', formData);
       alert('Early leave recorded and SMS/WhatsApp sent to parent!');
       setFormData({
         studentId: '',

@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import api from '../api/axios';
-
+import api from '../api/axios'; // ✅ use centralized axios
 
 const AuthContext = createContext();
 
@@ -17,67 +16,72 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
-  // Set axios default header
+  // Attach token & fetch user
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       fetchUser();
     } else {
       setLoading(false);
     }
   }, [token]);
 
+  // 🔹 Get logged-in user
   const fetchUser = async () => {
     try {
-      const response = await api.get('/api/auth/me');
-      setUser(response.data.user);
-    } catch (error) {
-      console.error('Fetch user error:', error);
+      const res = await api.get('/api/auth/me');
+      setUser(res.data.user);
+    } catch (err) {
+      console.error('Fetch user failed:', err);
       logout();
     } finally {
       setLoading(false);
     }
   };
 
+  // 🔹 Login
   const login = async (username, password) => {
     try {
-      const response = await axios.post('/api/auth/login', {
+      const res = await api.post('/api/auth/login', {
         username,
-        password
+        password,
       });
 
-      const { token: newToken, user: userData } = response.data;
+      const { token: newToken, user: userData } = res.data;
+
       setToken(newToken);
       setUser(userData);
       localStorage.setItem('token', newToken);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
       return { success: true };
-    } catch (error) {
+    } catch (err) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: err.response?.data?.message || 'Login failed',
       };
     }
   };
 
+  // 🔹 Logout
   const logout = () => {
-    setToken(null);
     setUser(null);
+    setToken(null);
     localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
+    delete api.defaults.headers.common['Authorization'];
   };
 
-  const value = {
-    user,
-    loading,
-    login,
-    logout,
-    isAuthenticated: !!user
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        isAuthenticated: !!user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
-
-
-

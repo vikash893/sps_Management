@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const LeavesManagement = () => {
@@ -16,7 +16,7 @@ const LeavesManagement = () => {
       const url = filter === 'all' 
         ? '/api/admin/leaves' 
         : `/api/admin/leave?status=${filter}`;
-      const response = await axios.get(url);
+      const response = await api.get(url);
       setLeaves(response.data);
     } catch (error) {
       console.error('Error fetching leaves:', error);
@@ -27,7 +27,7 @@ const LeavesManagement = () => {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      await axios.put(`/api/admin/leaves/${id}`, { status });
+      await api.put(`/api/admin/leaves/${id}`, { status });
       alert(`Leave ${status} successfully!`);
       fetchLeaves();
     } catch (error) {

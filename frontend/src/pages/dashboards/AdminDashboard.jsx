@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/axios';
 import './Dashboard.css';
 
 // Admin Components

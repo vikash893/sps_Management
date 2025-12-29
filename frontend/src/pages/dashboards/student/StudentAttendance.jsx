@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const StudentAttendance = () => {
@@ -19,7 +19,7 @@ const StudentAttendance = () => {
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
       
-      const response = await axios.get('/api/student/attendance', { params });
+      const response = await api.get('/api/student/attendance', { params });
       setAttendance(response.data.attendance);
       setStatistics(response.data.statistics);
     } catch (error) {

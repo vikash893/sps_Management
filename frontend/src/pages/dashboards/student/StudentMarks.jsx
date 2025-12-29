@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const StudentMarks = () => {
@@ -18,7 +18,7 @@ const StudentMarks = () => {
       if (filter.subject) params.subject = filter.subject;
       if (filter.examType) params.examType = filter.examType;
       
-      const response = await axios.get('/api/student/marks', { params });
+      const response = await api.get('/api/student/marks', { params });
       setMarks(response.data.marks);
       setMarksBySubject(response.data.marksBySubject);
     } catch (error) {

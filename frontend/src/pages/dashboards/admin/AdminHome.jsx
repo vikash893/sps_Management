@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios'; // ✅ use centralized axios
 import '../Dashboard.css';
 
 const AdminHome = () => {
@@ -18,7 +18,7 @@ const AdminHome = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/api/admin/stats');
+      const response = await api.get('/api/admin/stats'); // ✅ changed
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -34,6 +34,7 @@ const AdminHome = () => {
   return (
     <div className="dashboard-home">
       <h2>Admin Dashboard</h2>
+
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon">👨‍🎓</div>
@@ -42,6 +43,7 @@ const AdminHome = () => {
             <p>Total Students</p>
           </div>
         </div>
+
         <div className="stat-card">
           <div className="stat-icon">👨‍🏫</div>
           <div className="stat-info">
@@ -49,6 +51,7 @@ const AdminHome = () => {
             <p>Total Teachers</p>
           </div>
         </div>
+
         <div className="stat-card">
           <div className="stat-icon">📝</div>
           <div className="stat-info">
@@ -56,6 +59,7 @@ const AdminHome = () => {
             <p>Pending Leaves</p>
           </div>
         </div>
+
         <div className="stat-card">
           <div className="stat-icon">💬</div>
           <div className="stat-info">
@@ -63,6 +67,7 @@ const AdminHome = () => {
             <p>Pending Feedback</p>
           </div>
         </div>
+
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <div className="stat-info">
@@ -76,6 +81,3 @@ const AdminHome = () => {
 };
 
 export default AdminHome;
-
-
-

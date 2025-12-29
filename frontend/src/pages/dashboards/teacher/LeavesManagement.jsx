@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const LeavesManagement = () => {
@@ -18,7 +18,7 @@ const LeavesManagement = () => {
 
   const fetchLeaves = async () => {
     try {
-      const response = await axios.get('/api/teacher/leaves');
+      const response = await api.get('/api/teacher/leaves');
       setLeaves(response.data);
     } catch (error) {
       console.error('Error fetching leaves:', error);
@@ -30,7 +30,7 @@ const LeavesManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/teacher/leaves', formData);
+      await api.post('/api/teacher/leaves', formData);
       alert('Leave application submitted successfully!');
       setShowForm(false);
       setFormData({

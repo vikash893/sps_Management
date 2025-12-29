@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const StudentProfile = () => {
@@ -12,7 +12,7 @@ const StudentProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('/api/student/profile');
+      const response = await api.get('/api/student/profile');
       setProfile(response.data);
     } catch (error) {
       console.error('Error fetching profile:', error);

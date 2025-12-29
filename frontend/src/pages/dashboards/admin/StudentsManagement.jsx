@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import ClassSectionFilter from '../../../components/ClassSectionFilter';
 import '../Dashboard.css';
 
@@ -27,7 +27,7 @@ const StudentsManagement = () => {
       if (filterClass) params.class = filterClass;
       if (filterSection) params.section = filterSection;
 
-      const response = await axios.get('/api/admin/students', { params });
+      const response = await api.get('/api/admin/students', { params });
       setStudents(response.data);
     } catch (error) {
       console.error('Error fetching students:', error);
@@ -52,7 +52,7 @@ const StudentsManagement = () => {
         }
       });
 
-      await axios.post('/api/admin/students', formDataToSend, {
+      await api.post('/api/admin/students', formDataToSend, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
@@ -79,7 +79,7 @@ const StudentsManagement = () => {
     if (!window.confirm('Are you sure you want to delete this student?')) return;
 
     try {
-      await axios.delete(`/api/admin/students/${id}`);
+      await api.delete(`/api/admin/students/${id}`);
       alert('Student deleted successfully!');
       fetchStudents();
     } catch (error) {

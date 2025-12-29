@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const TeachersManagement = () => {
@@ -62,7 +62,7 @@ const TeachersManagement = () => {
       console.log('Fetching teachers...');
       
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/admin/teachers', {
+      const response = await api.get('/api/admin/teachers', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -162,7 +162,7 @@ const TeachersManagement = () => {
         };
         
         console.log('Create data:', createData);
-        const response = await axios.post('/api/admin/teachers', createData, {
+        const response = await api.post('/api/admin/teachers', createData, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -227,7 +227,7 @@ const TeachersManagement = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/admin/teachers/${id}`, {
+      await api.delete(`/api/admin/teachers/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -282,7 +282,7 @@ const TeachersManagement = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`/api/admin/users/${teacher.userId?._id || teacher.userId}/status`, {
+      await api.put(`/api/admin/users/${teacher.userId?._id || teacher.userId}/status`, {
         isActive: teacher.isActive === false
       }, {
         headers: {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const StudentFees = () => {
@@ -13,7 +13,7 @@ const StudentFees = () => {
 
   const fetchFees = async () => {
     try {
-      const response = await axios.get('/api/student/fees');
+      const response = await api.get('/api/student/fees');
       setFees(response.data.fees);
       setStatistics(response.data.statistics);
     } catch (error) {

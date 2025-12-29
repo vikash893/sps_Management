@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const AttendanceManagement = () => {
@@ -40,7 +40,7 @@ const AttendanceManagement = () => {
       setStudents(response.data);
       
       // Load existing attendance if available
-      const attendanceResponse = await axios.get('/api/teacher/attendance', {
+      const attendanceResponse = await api.get('/api/teacher/attendance', {
         params: { class: studentClass, section, subject, date }
       });
       
@@ -73,7 +73,7 @@ const AttendanceManagement = () => {
     }));
 
     try {
-      await axios.post('/api/teacher/attendance', {
+      await api.post('/api/teacher/attendance', {
         class: studentClass,
         section,
         subject,

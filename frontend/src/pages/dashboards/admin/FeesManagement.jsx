@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios'
 import ClassSectionFilter from '../../../components/ClassSectionFilter';
 import '../Dashboard.css';
 import './FeesManagement.css';
@@ -63,7 +63,7 @@ const FeesManagement = () => {
 
   const fetchFees = async () => {
     try {
-      const res = await axios.get('/api/admin/fees');
+      const res = await api.get('/api/admin/fees');
       console.log('Fees loaded:', res.data);
       setFees(res.data);
     } catch (err) {
@@ -76,7 +76,7 @@ const FeesManagement = () => {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get('/api/admin/students');
+      const res = await api.get('/api/admin/students');
       console.log('Students loaded:', res.data);
       setStudents(res.data);
     } catch (err) {
@@ -160,7 +160,7 @@ const FeesManagement = () => {
         console.log('Update response:', res.data);
         showAlert('success', 'Fee updated successfully');
       } else {
-        const res = await axios.post('/api/admin/fees', feeData);
+        const res = await api.post('/api/admin/fees', feeData);
         console.log('Create response:', res.data);
         showAlert('success', 'Fee added successfully');
       }
@@ -199,7 +199,7 @@ const FeesManagement = () => {
         data: paymentPayload
       });
 
-      const res = await axios.put(`/api/admin/fees/${selectedFee._id}`, paymentPayload);
+      const res = await api.put(`/api/admin/fees/${selectedFee._id}`, paymentPayload);
       
       console.log('Payment response:', res.data);
       showAlert('success', res.data.message || 'Payment recorded successfully');
@@ -229,7 +229,7 @@ const FeesManagement = () => {
 
     try {
       // Note: You need to add a DELETE route in your backend
-      await axios.delete(`/api/admin/fees/${feeId}`);
+      await api.delete(`/api/admin/fees/${feeId}`);
       showAlert('success', 'Fee deleted successfully');
       fetchFees();
     } catch (err) {

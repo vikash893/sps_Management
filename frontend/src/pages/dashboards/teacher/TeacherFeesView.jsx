@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios';
 import '../Dashboard.css';
 
 const TeacherFeesView = () => {
@@ -32,7 +32,7 @@ const TeacherFeesView = () => {
   const fetchTeacherInfo = async () => {
     try {
       console.log('Fetching teacher profile...');
-      const res = await axios.get('/api/teacher/profile');
+      const res = await api.get('/api/teacher/profile');
       console.log('Teacher profile:', res.data);
       setTeacherInfo(res.data);
       
