@@ -30,7 +30,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  'https://your-frontend.onrender.com' // add later after frontend deploy
+  'https://sps-management-frontend-actl.onrender.com' // add later after frontend deploy
 ];
 
 app.use(
