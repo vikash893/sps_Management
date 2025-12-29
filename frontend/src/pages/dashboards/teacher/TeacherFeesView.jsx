@@ -92,7 +92,7 @@ const TeacherFeesView = () => {
   const fetchFees = async (teacherData) => {
     try {
       console.log('Fetching fees for teacher:', teacherData);
-      const res = await axios.get('/api/teacher/fees');
+      const res = await api.get('/api/teacher/fees');
       console.log('Teacher fees:', res.data);
       setFees(res.data);
     } catch (err) {
@@ -119,7 +119,7 @@ const TeacherFeesView = () => {
   const fetchStudents = async (teacherData) => {
     try {
       console.log('Fetching students for teacher:', teacherData);
-      const res = await axios.get('/api/teacher/students');
+      const res = await api.get('/api/teacher/students');
       console.log('Teacher students:', res.data);
       setStudents(res.data);
     } catch (err) {

@@ -34,7 +34,7 @@ const AttendanceManagement = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get('/api/teacher/students', {
+      const response = await api.get('/api/teacher/students', {
         params: { class: studentClass, section }
       });
       setStudents(response.data);
