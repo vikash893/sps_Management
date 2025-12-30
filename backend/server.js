@@ -33,18 +33,28 @@ const allowedOrigins = [
   'https://sps-management-frontend-actl.onrender.com' // add later after frontend deploy
 ];
 
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       // allow REST tools like Postman (no origin)
+//       if (!origin) return callback(null, true);
+
+//       if (allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error('CORS not allowed for this origin'));
+//       }
+//     },
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//   })
+// );
+
+
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // allow REST tools like Postman (no origin)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('CORS not allowed for this origin'));
-      }
-    },
+    origin: true, // 🔥 allow all origins (safe for token auth)
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
