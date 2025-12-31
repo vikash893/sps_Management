@@ -34,11 +34,7 @@ const DashboardLayout = ({ children, role }) => {
   };
 
   const toggleSidebar = () => {
-    if (isMobile) {
-      setMobileMenuOpen(!mobileMenuOpen);
-    } else {
-      setSidebarOpen(!sidebarOpen);
-    }
+    setSidebarOpen(!sidebarOpen);
   };
 
   const toggleMobileMenu = () => {
@@ -46,9 +42,7 @@ const DashboardLayout = ({ children, role }) => {
   };
 
   const closeMobileMenu = () => {
-    if (isMobile) {
-      setMobileMenuOpen(false);
-    }
+    setMobileMenuOpen(false);
   };
 
   const handleNavItemClick = () => {
@@ -74,8 +68,8 @@ const DashboardLayout = ({ children, role }) => {
         { path: '/teacher/marks', label: 'Marks', icon: '📝' },
         { path: '/teacher/early-leave', label: 'Early Leave', icon: '🚪' },
         { path: '/teacher/leaves', label: 'My Leaves', icon: '📋' },
-        { path : '/teacher/viewFee' , label : 'Student Fee' , icon: '💰'},
-        { path : '/teacher/student-management', label : 'student management' , icon:'👨‍🏫'}
+        { path: '/teacher/viewFee', label: 'Student Fee', icon: '💰' },
+        { path: '/teacher/student-management', label: 'Student Management', icon: '👨‍🏫' }
       ];
     } else if (role === 'student') {
       return [
@@ -90,7 +84,7 @@ const DashboardLayout = ({ children, role }) => {
     return [];
   };
 
-  const sidebarClasses = `sidebar ${sidebarOpen ? 'open' : 'closed'} ${mobileMenuOpen ? 'mobile-open' : ''}`;
+  const sidebarClasses = `sidebar ${sidebarOpen && !isMobile ? 'open' : 'closed'} ${mobileMenuOpen ? 'mobile-open' : ''}`;
 
   return (
     <div className="dashboard-layout">
@@ -103,12 +97,24 @@ const DashboardLayout = ({ children, role }) => {
       <aside className={sidebarClasses}>
         <div className="sidebar-header">
           <h2>🏫 School</h2>
-          <button 
-            className="toggle-btn"
-            onClick={toggleSidebar}
-          >
-            {isMobile ? (mobileMenuOpen ? '✕' : '▶') : (sidebarOpen ? '◀' : '▶')}
-          </button>
+          {!isMobile && (
+            <button 
+              className="toggle-btn"
+              onClick={toggleSidebar}
+              aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+            >
+              {sidebarOpen ? '◀' : '▶'}
+            </button>
+          )}
+          {isMobile && mobileMenuOpen && (
+            <button 
+              className="toggle-btn"
+              onClick={closeMobileMenu}
+              aria-label="Close menu"
+            >
+              ✕
+            </button>
+          )}
         </div>
         <nav className="sidebar-nav">
           {getMenuItems().map((item) => (
@@ -138,7 +144,7 @@ const DashboardLayout = ({ children, role }) => {
               <button 
                 className="mobile-menu-toggle" 
                 onClick={toggleMobileMenu}
-                aria-label="Toggle menu"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
                 <span>{mobileMenuOpen ? '✕' : '☰'}</span>
               </button>
