@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './DashboardLayout.css';
@@ -8,10 +8,53 @@ const DashboardLayout = ({ children, role }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setMobileMenuOpen(false);
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const toggleSidebar = () => {
+    if (isMobile) {
+      setMobileMenuOpen(!mobileMenuOpen);
+    } else {
+      setSidebarOpen(!sidebarOpen);
+    }
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    if (isMobile) {
+      setMobileMenuOpen(false);
+    }
+  };
+
+  const handleNavItemClick = () => {
+    if (isMobile) {
+      setMobileMenuOpen(false);
+    }
   };
 
   const getMenuItems = () => {
@@ -47,16 +90,24 @@ const DashboardLayout = ({ children, role }) => {
     return [];
   };
 
+  const sidebarClasses = `sidebar ${sidebarOpen ? 'open' : 'closed'} ${mobileMenuOpen ? 'mobile-open' : ''}`;
+
   return (
     <div className="dashboard-layout">
-      <div className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+      {/* Mobile overlay */}
+      <div 
+        className={`overlay ${mobileMenuOpen ? 'active' : ''}`}
+        onClick={closeMobileMenu}
+      />
+      
+      <aside className={sidebarClasses}>
         <div className="sidebar-header">
           <h2>🏫 School</h2>
           <button 
             className="toggle-btn"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={toggleSidebar}
           >
-            {sidebarOpen ? '◀' : '▶'}
+            {isMobile ? (mobileMenuOpen ? '✕' : '▶') : (sidebarOpen ? '◀' : '▶')}
           </button>
         </div>
         <nav className="sidebar-nav">
@@ -65,34 +116,45 @@ const DashboardLayout = ({ children, role }) => {
               key={item.path}
               to={item.path}
               className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+              onClick={handleNavItemClick}
             >
               <span className="nav-icon">{item.icon}</span>
-              {sidebarOpen && <span className="nav-label">{item.label}</span>}
+              <span className="nav-label">{item.label}</span>
             </Link>
           ))}
         </nav>
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn">
-            🚪 Logout
+            <span>🚪</span>
+            {(sidebarOpen || mobileMenuOpen) && <span>Logout</span>}
           </button>
         </div>
-      </div>
+      </aside>
+      
       <div className="dashboard-content">
-        <div className="dashboard-header">
-          <h1>Welcome, {user?.profile?.name || user?.username}</h1>
-          <div className="user-info">
-            <span className="role-badge">{role}</span>
+        <header className="dashboard-header">
+          <div className="header-content">
+            {isMobile && (
+              <button 
+                className="mobile-menu-toggle" 
+                onClick={toggleMobileMenu}
+                aria-label="Toggle menu"
+              >
+                <span>{mobileMenuOpen ? '✕' : '☰'}</span>
+              </button>
+            )}
+            <h1>Welcome, {user?.profile?.name || user?.username}</h1>
+            <div className="user-info">
+              <span className="role-badge">{role}</span>
+            </div>
           </div>
-        </div>
-        <div className="dashboard-main">
+        </header>
+        <main className="dashboard-main">
           {children}
-        </div>
+        </main>
       </div>
     </div>
   );
 };
 
 export default DashboardLayout;
-
-
-
