@@ -31,7 +31,8 @@ const DashboardLayout = ({ children, role }) => {
         { path: '/teacher/marks', label: 'Marks', icon: '📝' },
         { path: '/teacher/early-leave', label: 'Early Leave', icon: '🚪' },
         { path: '/teacher/leaves', label: 'My Leaves', icon: '📋' },
-        { path : '/teacher/viewFee' , label : 'Student Fee' , icon: '💰'}
+        { path : '/teacher/viewFee' , label : 'Student Fee' , icon: '💰'},
+        { path : '/teacher/student-management', label : 'student management' , icon:'👨‍🏫'}
       ];
     } else if (role === 'student') {
       return [

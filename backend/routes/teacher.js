@@ -7,9 +7,46 @@ import Leave from '../models/Leave.js';
 import Fee from '../models/Fee.js';
 import EarlyLeave from '../models/EarlyLeave.js';
 import Teacher from '../models/Teacher.js';
+import User from '../models/User.js'; // Added User import
 import { sendSMS, sendWhatsApp } from '../utils/sendSMS.js';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
+
+// ========== MULTER CONFIGURATION ==========
+// Create uploads directory if it doesn't exist
+const uploadsDir = 'uploads/students';
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'student-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed (jpeg, jpg, png, gif)'));
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 }
+});
 
 // All routes require teacher authentication
 router.use(protect);
@@ -90,6 +127,246 @@ router.get('/students', async (req, res) => {
   } catch (error) {
     console.error('Get students error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// @route   POST /api/teacher/students/add
+// @desc    Add a new student to teacher's assigned class
+// @access  Private/Teacher
+router.post('/students/add', upload.single('photo'), async (req, res) => {
+  try {
+    console.log('📝 TEACHER ADDING STUDENT...');
+    
+    const { name, class: studentClass, section, dob, fatherName, fatherMobile, motherName, address } = req.body;
+
+    // Validate required fields
+    if (!name || !studentClass || !section || !dob || !fatherMobile) {
+      return res.status(400).json({ 
+        message: 'Please provide all required fields (Name, Class, Section, DOB, Father Mobile)' 
+      });
+    }
+
+    // Get teacher profile to check authorization
+    const teacher = await Teacher.findOne({ userId: req.user._id });
+    
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher profile not found' });
+    }
+
+    // Check if teacher is authorized to add to this class/section
+    let isAuthorized = false;
+    
+    // Check main assigned class
+    if (teacher.assignedClass && teacher.assignedSection) {
+      if (teacher.assignedClass === studentClass && teacher.assignedSection === section) {
+        isAuthorized = true;
+      }
+    }
+    
+    // Check assignedClasses array
+    if (!isAuthorized && teacher.assignedClasses && teacher.assignedClasses.length > 0) {
+      isAuthorized = teacher.assignedClasses.some(cls => 
+        cls.class === studentClass && cls.section === section
+      );
+    }
+
+    if (!isAuthorized) {
+      return res.status(403).json({ 
+        message: `You are not authorized to add students to Class ${studentClass} - Section ${section}` 
+      });
+    }
+
+    // ========== CREATE USER ACCOUNT (Same as admin) ==========
+    // Format DOB as password (DDMMYYYY)
+    const dobDate = new Date(dob);
+    const day = String(dobDate.getDate()).padStart(2, '0');
+    const month = String(dobDate.getMonth() + 1).padStart(2, '0');
+    const year = dobDate.getFullYear();
+    const defaultPassword = `${day}${month}${year}`;
+    console.log('🔑 Default password generated:', defaultPassword);
+
+    // Generate username (firstname_lastname_class_section)
+    const usernameBase = `${name.toLowerCase().replace(/\s+/g, '_')}_${studentClass}_${section}`;
+    console.log('👤 Base username:', usernameBase);
+
+    // Check if username exists
+    let finalUsername = usernameBase;
+    let counter = 1;
+    while (await User.findOne({ username: finalUsername })) {
+      finalUsername = `${usernameBase}_${counter}`;
+      counter++;
+    }
+    console.log('✅ Final username:', finalUsername);
+
+    // Generate email
+    const email = `${finalUsername}@school.com`;
+
+    // Create user
+    const user = new User({
+      username: finalUsername,
+      password: defaultPassword,
+      role: 'student',
+      email: email,
+      phone: fatherMobile,
+      isActive: true
+    });
+
+    await user.save();
+    console.log('✅ User account created:', user._id);
+
+    // ========== CREATE STUDENT PROFILE (Same as admin) ==========
+    // Handle file upload
+    let photoPath = '';
+    if (req.file) {
+      photoPath = `/uploads/${req.file.filename}`;
+      console.log('📸 Photo path:', photoPath);
+    }
+
+    // Create student profile
+    const student = new Student({
+      name,
+      class: studentClass,
+      section,
+      dob: dobDate,
+      fatherName: fatherName || '',
+      fatherMobile,
+      motherName: motherName || '',
+      address: address || '',
+      photo: photoPath,
+      userId: user._id
+    });
+
+    await student.save();
+    console.log('✅ Student profile created:', student._id);
+
+    // Update user with profile reference
+    user.profileId = student._id;
+    user.roleRef = 'Student';
+    await user.save();
+    console.log('✅ User updated with profile reference');
+
+    console.log('='.repeat(50));
+    console.log('🎉 STUDENT ADDED SUCCESSFULLY BY TEACHER');
+    console.log('📋 Student Details:');
+    console.log('- Name:', name);
+    console.log('- Class/Section:', studentClass, section);
+    console.log('- Username:', finalUsername);
+    console.log('- Password:', defaultPassword);
+    console.log('='.repeat(50));
+
+    res.status(201).json({
+      success: true,
+      message: 'Student added successfully',
+      student: {
+        _id: student._id,
+        name: student.name,
+        class: student.class,
+        section: student.section,
+        dob: student.dob,
+        fatherMobile: student.fatherMobile,
+        photo: student.photo,
+        username: finalUsername,
+        defaultPassword: defaultPassword
+      }
+    });
+  } catch (error) {
+    console.error('❌ Add student error:', error);
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        success: false,
+        message: 'Validation failed', 
+        errors 
+      });
+    }
+    
+    // Handle duplicate username/email
+    if (error.code === 11000) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Username already exists. Please try again.' 
+      });
+    }
+
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error', 
+      error: error.message 
+    });
+  }
+});
+
+// @route   DELETE /api/teacher/students/:id
+// @desc    Delete a student from teacher's assigned class
+// @access  Private/Teacher
+router.delete('/students/:id', async (req, res) => {
+  try {
+    console.log('🗑️ Teacher deleting student:', req.params.id);
+    
+    const student = await Student.findById(req.params.id);
+    
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Get teacher profile
+    const teacher = await Teacher.findOne({ userId: req.user._id });
+    
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher profile not found' });
+    }
+
+    // Check if teacher is authorized to delete from this class/section
+    let isAuthorized = false;
+    
+    // Check main assigned class
+    if (teacher.assignedClass && teacher.assignedSection) {
+      if (teacher.assignedClass === student.class && teacher.assignedSection === student.section) {
+        isAuthorized = true;
+      }
+    }
+    
+    // Check assignedClasses array
+    if (!isAuthorized && teacher.assignedClasses && teacher.assignedClasses.length > 0) {
+      isAuthorized = teacher.assignedClasses.some(cls => 
+        cls.class === student.class && cls.section === student.section
+      );
+    }
+
+    if (!isAuthorized) {
+      return res.status(403).json({ 
+        message: 'You are not authorized to delete students from this class/section' 
+      });
+    }
+
+    // Find and delete the associated user account
+    const user = await User.findOne({ 
+      profileId: student._id, 
+      roleRef: 'Student' 
+    });
+    
+    if (user) {
+      await User.findByIdAndDelete(user._id);
+      console.log('✅ Associated user account deleted:', user._id);
+    }
+
+    // Delete student profile
+    await Student.findByIdAndDelete(req.params.id);
+    console.log('✅ Student profile deleted:', req.params.id);
+
+    res.json({ 
+      success: true,
+      message: 'Student and associated account deleted successfully' 
+    });
+  } catch (error) {
+    console.error('❌ Delete student error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error', 
+      error: error.message 
+    });
   }
 });
 
