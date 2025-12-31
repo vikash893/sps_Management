@@ -24,7 +24,7 @@ const About = () => {
               <li>Fee tracking and updates</li>
               <li>Leave management system</li>
               <li>Feedback and communication tools</li>
-              <li>Parent notifications via SMS/WhatsApp</li>
+              {/* <li>Parent notifications via SMS/WhatsApp</li> */}
             </ul>
           </section>
           <section>

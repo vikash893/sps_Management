@@ -15,15 +15,15 @@ const Contact = () => {
             <div className="contact-details">
               <div className="contact-item">
                 <strong>📧 Email:</strong>
-                <p>support@schoolmanagement.com</p>
+                <p>sps@schoolmanagement.com</p>
               </div>
               <div className="contact-item">
                 <strong>📞 Phone:</strong>
-                <p>+1 (555) 123-4567</p>
+                <p>+91 8053461048</p>
               </div>
               <div className="contact-item">
                 <strong>📍 Address:</strong>
-                <p>123 Education Street<br />Learning City, LC 12345</p>
+                <p>Nuh Haryana<br />MandiKhera</p>
               </div>
             </div>
           </div>

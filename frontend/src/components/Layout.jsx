@@ -24,7 +24,7 @@ const Layout = () => {
       <nav className="navbar">
         <div className="nav-container">
           <Link to="/" className="nav-logo">
-            🏫 Sristhi public school
+            🏫 Srishti public school
           </Link>
           <ul className="nav-menu">
             <li><Link to="/">Home</Link></li>
@@ -50,6 +50,7 @@ const Layout = () => {
       </main>
       <footer className="footer">
         <p>&copy; 2024 School Management System. All rights reserved.</p>
+        <p>Made with 💘 and 🍵 by a powered developer</p>
       </footer>
     </div>
   );

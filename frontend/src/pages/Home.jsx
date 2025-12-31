@@ -21,7 +21,7 @@ const Home = () => {
       {/* ================= HERO SECTION ================= */}
       <section className="hero">
         <div className="hero-content">
-          <h1>Welcome to Sristhi School Management System</h1>
+          <h1>Welcome to Srishti School Management System</h1>
           <p>
             A complete solution for managing students, teachers,
             attendance, fees, and school administration efficiently.
@@ -128,6 +128,36 @@ const Home = () => {
           </div>
         </div>
       </section> */}
+
+      {/* ================= CREATOR SECTION ================= */}
+      <section className="creator-section">
+        <div className="container">
+          <div className="creator-content">
+            <p className="creator-text">
+              Website designed and developed by
+            </p>
+            <h3 className="creator-name">Vikash Bhardwaj</h3>
+            <div className="creator-links">
+              <a 
+                href="mailto:vikashbhardwaj430@gmail.com" 
+                className="creator-link"
+                title="Send email"
+              >
+                📧 vikashbhardwaj430@gmail.com
+              </a>
+              <a 
+                href="https://myportfolio2403.netlify.app/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="creator-link"
+                title="Visit portfolio"
+              >
+                🔗 Portfolio
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
     </div>
   );

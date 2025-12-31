@@ -78,7 +78,7 @@ const Login = () => {
           </form>
 
           <div className="login-info">
-            <p><strong>Note:</strong> Students use DOB (DDMMYYYY) as default password</p>
+            <p><strong>Note:</strong> feel any issue contact to admin </p>
           </div>
         </div>
       </div>
