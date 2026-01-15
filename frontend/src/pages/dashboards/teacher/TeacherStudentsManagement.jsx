@@ -13,7 +13,7 @@ const TeacherStudentsManagement = () => {
     name: '',
     class: '',
     section: '',
-    dob: '',
+    dob: '2007-01-01', // Default date set to January 1, 2007
     fatherName: '',
     fatherMobile: '',
     motherName: '',
@@ -120,7 +120,7 @@ const TeacherStudentsManagement = () => {
       name: '',
       class: teacherInfo?.assignedClass || '',
       section: teacherInfo?.assignedSection || '',
-      dob: '',
+      dob: '2007-01-01', // Reset to default date January 1, 2007
       fatherName: '',
       fatherMobile: '',
       motherName: '',
@@ -531,7 +531,7 @@ const TeacherStudentsManagement = () => {
                   </td>
                 </tr>
               ))}
-            </tbody>
+              </tbody>
           </table>
         )}
       </div>
