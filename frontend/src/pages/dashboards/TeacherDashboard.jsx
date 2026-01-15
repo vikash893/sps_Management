@@ -7,6 +7,7 @@ import EarlyLeaveManagement from './teacher/EarlyLeaveManagement';
 import LeavesManagement from './teacher/LeavesManagement';
 import TeacherFeesView from './teacher/TeacherFeesView';
 import TeacherStudentsManagement from './teacher/TeacherStudentsManagement'; 
+import TeacherViewMarks from './teacher/TeacherViewMarks';
 
 const TeacherDashboard = () => {
   return (
@@ -18,6 +19,7 @@ const TeacherDashboard = () => {
       <Route path="leaves" element={<LeavesManagement />} />
       <Route path="viewFee" element={<TeacherFeesView />} />
       <Route path="student-management" element={<TeacherStudentsManagement/>}/>
+      <Route path="Student-Marks" element={<TeacherViewMarks/>}/>
     </Routes>
   );
 };
